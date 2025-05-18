@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 	"os"
-)
 
-import "github.com/spf13/cobra"
+	"github.com/spf13/cobra"
+)
 
 var initCmd = &cobra.Command{
 	Use:   "init",
@@ -24,7 +24,14 @@ var initCmd = &cobra.Command{
 			os.Exit(1)
 		}
 		defer f.Close()
-		f.WriteString("# cyfn global config\n")
+
+		_, err = f.WriteString("# cyfn global config\n")
+
+		if err != nil {
+			fmt.Println("Error writing to config.yaml:", err)
+			os.Exit(1)
+		}
+
 		fmt.Println("Workspace initialized.")
 	},
 }

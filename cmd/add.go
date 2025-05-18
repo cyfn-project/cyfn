@@ -29,16 +29,28 @@ var addCmd = &cobra.Command{
 
 		targetContent := fmt.Sprintf(
 			`name: %s
-		url: %s
-		created: %s
-		script: %s
-		`, name, targetURL, time.Now().Format(time.RFC3339), scriptPath)
+url: %s
+created: %s
+script: %s
+`, name, targetURL, time.Now().Format(time.RFC3339), scriptPath)
 
-		os.WriteFile(targetPath, []byte(targetContent), 0644)
+		err := os.WriteFile(targetPath, []byte(targetContent), 0644)
+
+		if err != nil {
+			fmt.Println("Error writing target file:", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Created target file: %s\n", targetPath)
 
 		if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
 			os.WriteFile(scriptPath, []byte(scriptStub(scriptLang)), 0755)
+
+			fmt.Printf("Created script file: %s\n", scriptPath)
 		}
+
+		fmt.Printf("Target URL: %s\n", targetURL)
+		fmt.Printf("Script language: %s\n", scriptLang)
+		fmt.Printf("Script path: %s\n", scriptPath)
 
 		fmt.Printf("Added target '%s' with script '%s'\n", name, scriptPath)
 	},
