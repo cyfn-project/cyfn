@@ -1,4 +1,4 @@
-import parseopt, httpClient, cyfn_c
+import parseopt, httpClient, strutils, cyfn_c
 
 proc showHelp() =
   echo """
@@ -32,8 +32,23 @@ when isMainModule:
     showHelp()
     quit(1)
 
-  let html = newHttpClient().getContent(url)
-  let result = cyfn_scrape(html.cstring(), xpath.cstring())
+  try:
+    let html = newHttpClient().getContent(url)
+    let result = $cyfn_scrape(html.cstring(), xpath.cstring())
 
-  echo result
+    if result.len == 0:
+      stderr.writeLine("cyfn_scrape returned nothing.")
+      quit(2)
+
+    if result.startsWith("Error:"):
+      stderr.writeLine("Scraper error: " & result)
+      quit(2)
+
+    echo result
+  except HttpRequestError as e:
+    stderr.writeLine("HTTP error: " & e.msg)
+    quit(3)
+  except CatchableError as e:
+    stderr.writeLine("Unexpected error: " & e.msg)
+    quit(99)
 
