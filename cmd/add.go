@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -18,6 +19,12 @@ var addCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]
+
+		// Validate target name: alphanumeric with underscores and hyphens only
+		if !regexp.MustCompile(`^[a-zA-Z0-9_-]+$`).MatchString(name) {
+			fmt.Println("Error: Target name must contain only letters, numbers, underscores, and hyphens")
+			os.Exit(1)
+		}
 
 		targetPath := filepath.Join("targets", name+".yaml")
 		scriptPath := filepath.Join("scripts", name+"."+extForLang(scriptLang))
@@ -43,7 +50,10 @@ script: %s
 		fmt.Printf("Created target file: %s\n", targetPath)
 
 		if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
-			os.WriteFile(scriptPath, []byte(scriptStub(scriptLang)), 0755)
+			if err := os.WriteFile(scriptPath, []byte(scriptStub(scriptLang)), 0755); err != nil {
+				fmt.Printf("Error creating script file: %v\n", err)
+				os.Exit(1)
+			}
 
 			fmt.Printf("Created script file: %s\n", scriptPath)
 		}
