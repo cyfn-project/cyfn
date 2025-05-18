@@ -7,4 +7,5 @@ elif defined(macosx):
 else:
     const ffiLib = "libcyfncore.so"
 
+proc cyfn_init*() {.importc, dynlib: ffiLib.}
 proc cyfn_scrape*(html: cstring, xpath: cstring): cstring {.importc, dynlib: ffiLib.}

@@ -1,4 +1,4 @@
-import parseopt, cyfn_c
+import parseopt, httpClient, cyfn_c
 
 proc showHelp() =
   echo """
@@ -12,20 +12,28 @@ proc showHelp() =
   """
 
 when isMainModule:
+  cyfn_init()
+
   var
     url = ""
     xpath = ""
-    result: cstring
 
   for kind, key, val in getopt():
-    case key
-    of "url": url = val
-    of "xpath": xpath = val
-    of "help": showHelp(); quit(0)
+    case kind
+    of cmdLongOption:
+      case key
+      of "url": url = val
+      of "xpath": xpath = val
+      of "help": showHelp(); quit(0)
+      else: discard
     else: discard
 
   if url.len == 0 or xpath.len == 0:
     showHelp()
     quit(1)
 
-  result = cyfn_scrape(url.cstring(), xpath.cstring())
+  let html = newHttpClient().getContent(url)
+  let result = cyfn_scrape(html.cstring(), xpath.cstring())
+
+  echo result
+

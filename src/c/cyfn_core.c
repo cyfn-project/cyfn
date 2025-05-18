@@ -6,9 +6,16 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 
-void cyfn_init_gc()
+void cyfn_init()
 {
     GC_INIT();
+    xmlInitParser();
+}
+
+void cyfn_cleanup()
+{
+    xmlCleanupParser();
+    // No GC cleanup needed as Boehm GC handles this automatically
 }
 
 const char *cyfn_scrape(const char *html, const char *xpath_expr)
@@ -35,7 +42,9 @@ const char *cyfn_scrape(const char *html, const char *xpath_expr)
     xmlNodeSetPtr nodes = result->nodesetval;
     int len = (nodes) ? nodes->nodeNr : 0;
 
-    char *output = GC_MALLOC(8192);
+    size_t buffer_size = 8192;
+    size_t used_size = 0;
+    char *output = GC_MALLOC(buffer_size);
     output[0] = 0;
 
     for (int i = 0; i < len; i++)
@@ -43,8 +52,32 @@ const char *cyfn_scrape(const char *html, const char *xpath_expr)
         xmlChar *content = xmlNodeGetContent(nodes->nodeTab[i]);
         if (content)
         {
-            strncat(output, (char *)content, 8192 - strlen(output) - 2);
-            strncat(output, "\n", 8192 - strlen(output) - 1);
+            size_t content_len = strlen((char *)content);
+            size_t needed_size = used_size + content_len + 2; // +2 for newline and null terminator
+
+            if (needed_size > buffer_size)
+            {
+                size_t new_size = buffer_size * 2;
+                while (new_size < needed_size)
+                    new_size *= 2;
+
+                char *new_buffer = GC_MALLOC(new_size);
+                if (!new_buffer)
+                {
+                    xmlFree(content);
+                    continue; // Skip this node if allocation fails
+                }
+
+                memcpy(new_buffer, output, used_size);
+                output = new_buffer;
+                buffer_size = new_size;
+            }
+
+            memcpy(output + used_size, content, content_len);
+            used_size += content_len;
+            output[used_size] = '\n';
+            used_size++;
+            output[used_size] = '\0';
             xmlFree(content);
         }
     }

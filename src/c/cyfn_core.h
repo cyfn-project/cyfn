@@ -11,7 +11,9 @@ extern "C"
 {
 #endif
 
-    void cyfn_init_gc();
+    void cyfn_init();
+
+    void cyfn_cleanup();
 
     const char *cyfn_scrape(const char *html, const char *xpath_expr);
 
