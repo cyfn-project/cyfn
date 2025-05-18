@@ -35,7 +35,8 @@ proc main() =
     quit(1)
 
   try:
-    let html = newHttpClient().getContent(url)
+    let client = newHttpClient(timeout = 10000)
+    let html = client.getContent(url)
     let result = $cyfn_scrape(html.cstring(), xpath.cstring())
 
     if result.len == 0:
