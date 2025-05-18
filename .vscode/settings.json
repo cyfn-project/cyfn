@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "htmlparser.h": "c",
+        "gc.h": "c"
+    }
+}

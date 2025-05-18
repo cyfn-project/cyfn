@@ -1,5 +1,59 @@
-# This is just an example to get you started. A typical binary package
-# uses this file as the main entry point of the application.
+import parseopt, httpClient, strutils, cyfn_c
+
+proc showHelp() =
+  echo """
+  Usage:
+    cyfn --url <URL> --xpath <XPATH>
+
+  Options:
+    --url <URL>       Target page to scrape
+    --xpath <XPATH>   XPath expression
+    --help            This help message
+  """
+
+proc main() =
+  cyfn_init()
+  defer:
+    cyfn_cleanup()
+
+  var
+    url = ""
+    xpath = ""
+
+  for kind, key, val in getopt():
+    case kind
+    of cmdLongOption:
+      case key
+      of "url": url = val
+      of "xpath": xpath = val
+      of "help": showHelp(); quit(0)
+      else: discard
+    else: discard
+
+  if url.len == 0 or xpath.len == 0:
+    showHelp()
+    quit(1)
+
+  try:
+    let client = newHttpClient(timeout = 10000)
+    let html = client.getContent(url)
+    let result = $cyfn_scrape(html.cstring(), xpath.cstring())
+
+    if result.len == 0:
+      stderr.writeLine("cyfn_scrape returned nothing.")
+      quit(2)
+
+    if result.startsWith("Error:"):
+      stderr.writeLine("Scraper error: " & result)
+      quit(2)
+
+    echo result
+  except HttpRequestError as e:
+    stderr.writeLine("HTTP error: " & e.msg)
+    quit(3)
+  except CatchableError as e:
+    stderr.writeLine("Unexpected error: " & e.msg)
+    quit(99)
 
 when isMainModule:
-  echo("Hello, World!")
+  main()
