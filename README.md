@@ -11,7 +11,7 @@ Think of it as _Metasploit for scraping_: extract data with surgical precision u
 - **C-first.**  
   The core is written in pure C using `libxml2`, `libxslt`, and `boehm-gc`. It builds cleanly, links anywhere, and runs everywhere.
 
-- **Nim-powered CLI.**  
+- **[Nim](https://nim-lang.org/)-powered CLI.**  
   The CLI is built in Nim: light, expressive, portable, and _fast_.
 
 - **Lua scripting (coming soon).**  
@@ -67,4 +67,4 @@ Find Your Next Tech Job
 * JSON output mode (`--json`)
 * Interactive REPL shell (`cyfn --shell`)
 * Daemon mode with socket API
-* WASM core build for browser/hybrid execution
+* [XFrames](https://github.com/xframes-project/xframes)-powered GUI for interactive scraping (driven by Lua)
