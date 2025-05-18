@@ -45,6 +45,14 @@ const char *cyfn_scrape(const char *html, const char *xpath_expr)
     size_t buffer_size = 8192;
     size_t used_size = 0;
     char *output = GC_MALLOC(buffer_size);
+
+    if (!output)
+    {
+        xmlXPathFreeObject(result);
+        xmlXPathFreeContext(ctx);
+        xmlFreeDoc(doc);
+        return "Error: Memory allocation failed";
+    }
     output[0] = 0;
 
     for (int i = 0; i < len; i++)
@@ -68,7 +76,7 @@ const char *cyfn_scrape(const char *html, const char *xpath_expr)
                     continue; // Skip this node if allocation fails
                 }
 
-                memcpy(new_buffer, output, used_size);
+                memcpy(new_buffer, output, used_size + 1); // includes null terminator
                 output = new_buffer;
                 buffer_size = new_size;
             }

@@ -11,8 +11,10 @@ proc showHelp() =
     --help            This help message
   """
 
-when isMainModule:
+proc main() =
   cyfn_init()
+  defer:
+    cyfn_cleanup()
 
   var
     url = ""
@@ -52,3 +54,5 @@ when isMainModule:
     stderr.writeLine("Unexpected error: " & e.msg)
     quit(99)
 
+when isMainModule:
+  main()
