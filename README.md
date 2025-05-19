@@ -1,5 +1,9 @@
 # `cyfn`
 
+[![Status: Pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange)]()
+[![License: MPL-2.0](https://img.shields.io/github/license/cyfn-project/cyfn)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/cyfn-project/cyfn?style=social)](https://github.com/cyfn-project/cyfn/stargazers)
+
 **cyfn** is a low-level, high-power scraping engine built in Nim, backed by C, and designed to be embedded, scripted, and deployed like a digital scalpel.
 
 Think of it as _Metasploit for scraping_: extract data with surgical precision using XPath, a native C core, and a fast, zero-boilerplate CLI.
