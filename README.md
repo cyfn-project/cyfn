@@ -4,6 +4,8 @@
 
 Think of it as _Metasploit for scraping_: extract data with surgical precision using XPath, a native C core, and a fast, zero-boilerplate CLI.
 
+**Join the discord**: https://discord.gg/cDVy2aJT8h
+
 ---
 
 ## Core Principles
